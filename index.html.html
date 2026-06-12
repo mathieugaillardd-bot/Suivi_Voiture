@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Mon Garage</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.0.0/tabler-icons.min.css">
+<style>
+  :root {
+    --blue: #185FA5;
+    --blue-light: #E6F1FB;
+    --blue-dark: #0C447C;
+    --green: #1D9E75;
+    --green-light: #EAF3DE;
+    --green-dark: #3B6D11;
+    --purple: #7F77DD;
+    --purple-light: #EEEDFE;
+    --purple-dark: #3C3489;
+    --amber: #BA7517;
+    --amber-light: #FAEEDA;
+    --red: #A32D2D;
+    --red-light: #FCEBEB;
+    --coral: #D85A30;
+    --coral-light: #FAECE7;
+    --gray-bg: #F7F7F5;
+    --surface: #FFFFFF;
+    --border: rgba(0,0,0,0.1);
+    --border-med: rgba(0,0,0,0.18);
+    --text: #1a1a18;
+    --text-sec: #5F5E5A;
+    --text-hint: #888780;
+    --radius: 10px;
+    --radius-sm: 7px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --gray-bg: #1a1a18;
+      --surface: #252523;
+      --border: rgba(255,255,255,0.1);
+      --border-med: rgba(255,255,255,0.18);
+      --text: #f0efec;
+      --text-sec: #B4B2A9;
+      --text-hint: #888780;
+      --blue-light: #0c2a45;
+      --green-light: #0e2e1c;
+      --purple-light: #1e1c3a;
+      --amber-light: #2e1f06;
+      --red-light: #2e0f0f;
+      --coral-light: #2e1409;
+    }
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--gray-bg); color: var(--text); min-height: 100vh; }
+  .app { max-width: 430px; margin: 0 auto; background: var(--gray-bg); min-height: 100vh; position: relative; padding-bottom: 80px; }
+
+  /* Header */
+  .header { background: var(--surface); padding: 52px 16px 12px; border-bottom: 0.5px solid var(--border); display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 10; }
+  .header h1 { font-size: 20px; font-weight: 600; color: var(--text); display: flex; align-items: center; gap: 8px; }
+  .header h1 i { color: var(--blue); font-size: 22px; }
+  .header-sub { font-size: 12px; color: var(--text-hint); }
+
+  /* Bottom nav */
+  .bottom-nav { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 430px; background: var(--surface); border-top: 0.5px solid var(--border); display: flex; z-index: 20; padding-bottom: env(safe-area-inset-bottom); }
+  .nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; padding: 10px 4px 8px; cursor: pointer; gap: 3px; color: var(--text-hint); font-size: 10px; font-weight: 500; transition: color 0.15s; }
+  .nav-item i { font-size: 22px; }
+  .nav-item.active { color: var(--blue); }
+
+  /* Pages */
+  .page { display: none; padding: 12px 14px; }
+  .page.active { display: block; }
+
+  /* Section title */
+  .sec { font-size: 11px; font-weight: 600; color: var(--text-hint); letter-spacing: .06em; text-transform: uppercase; margin: 16px 0 8px; }
+  .sec:first-child { margin-top: 4px; }
+
+  /* Cards */
+  .card { background: var(--surface); border-radius: var(--radius); border: 0.5px solid var(--border); padding: 14px; margin-bottom: 10px; }
+  .card-tight { padding: 0; overflow: hidden; }
+
+  /* Stat grid */
+  .g2 { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 8px; margin-bottom: 10px; }
+  .stat { background: var(--surface); border-radius: var(--radius-sm); border: 0.5px solid var(--border); padding: 12px; }
+  .stat-label { font-size: 11px; color: var(--text-hint); margin-bottom: 4px; }
+  .stat-val { font-size: 20px; font-weight: 600; color: var(--text); line-height: 1; }
+  .stat-unit { font-size: 12px; font-weight: 400; color: var(--text-sec); }
+
+  /* Rows */
+  .row { display: flex; align-items: center; justify-content: space-between; padding: 11px 14px; border-bottom: 0.5px solid var(--border); }
+  .row:last-child { border-bottom: none; }
+  .row-l { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0; }
+  .ico { width: 34px; height: 34px; border-radius: 9px; display: flex; align-items: center; justify-content: center; font-size: 17px; flex-shrink: 0; }
+  .ico-blue { background: var(--blue-light); color: var(--blue); }
+  .ico-green { background: var(--green-light); color: var(--green-dark); }
+  .ico-purple { background: var(--purple-light); color: var(--purple-dark); }
+  .ico-amber { background: var(--amber-light); color: var(--amber); }
+  .ico-red { background: var(--red-light); color: var(--red); }
+  .ico-gray { background: var(--gray-bg); color: var(--text-sec); }
+  .rname { font-size: 13px; font-weight: 500; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .rsub { font-size: 11px; color: var(--text-hint); margin-top: 1px; }
+  .rval { font-size: 14px; font-weight: 600; color: var(--text); text-align: right; white-space: nowrap; }
+  .rsub2 { font-size: 11px; color: var(--text-hint); text-align: right; margin-top: 1px; }
+
+  /* Alerts */
+  .alert { display: flex; align-items: flex-start; gap: 10px; padding: 11px 13px; border-radius: var(--radius-sm); margin-bottom: 7px; font-size: 13px; }
+  .alert i { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+  .alert strong { font-weight: 600; }
+  .alert-sub { font-size: 11px; opacity: .75; margin-top: 2px; }
+  .au { background: var(--red-light); color: var(--red); }
+  .as { background: var(--amber-light); color: var(--amber); }
+  .ao { background: var(--green-light); color: var(--green-dark); }
+
+  /* Badges */
+  .badge { font-size: 11px; padding: 3px 8px; border-radius: 20px; font-weight: 600; white-space: nowrap; }
+  .br { background: var(--red-light); color: var(--red); }
+  .ba { background: var(--amber-light); color: var(--amber); }
+  .bg { background: var(--green-light); color: var(--green-dark); }
+  .bb { background: var(--blue-light); color: var(--blue-dark); }
+  .bp { background: var(--purple-light); color: var(--purple-dark); }
+  .bco { background: var(--coral-light); color: var(--coral); }
+
+  /* Car selector */
+  .csel { display: flex; gap: 7px; margin-bottom: 12px; }
+  .csb { flex: 1; padding: 8px 6px; font-size: 12px; font-weight: 600; border-radius: var(--radius-sm); border: 0.5px solid var(--border-med); cursor: pointer; background: var(--surface); color: var(--text-sec); text-align: center; transition: all .15s; }
+  .csb.active { background: var(--blue-light); color: var(--blue-dark); border-color: var(--blue); }
+
+  /* Category bars */
+  .cat-bar { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+  .cat-bar-label { font-size: 12px; color: var(--text-sec); width: 76px; flex-shrink: 0; }
+  .cat-bar-track { flex: 1; height: 7px; background: var(--gray-bg); border-radius: 4px; overflow: hidden; }
+  .cat-bar-fill { height: 100%; border-radius: 4px; transition: width .4s ease; }
+  .cat-bar-val { font-size: 12px; color: var(--text); font-weight: 600; min-width: 52px; text-align: right; }
+
+  /* Chart */
+  .chart-wrap { position: relative; width: 100%; }
+
+  /* Forms */
+  .form-card { background: var(--surface); border-radius: var(--radius); border: 0.5px solid var(--border); padding: 14px; margin-bottom: 10px; }
+  .form-label { font-size: 12px; font-weight: 500; color: var(--text-sec); display: block; margin-bottom: 5px; margin-top: 13px; }
+  .form-label:first-child { margin-top: 0; }
+  .form-input { width: 100%; padding: 10px 12px; border: 0.5px solid var(--border-med); border-radius: var(--radius-sm); font-size: 14px; background: var(--surface); color: var(--text); outline: none; transition: border-color .15s; -webkit-appearance: none; }
+  .form-input:focus { border-color: var(--blue); }
+  .form-row { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 8px; }
+  .preview-box { margin-top: 10px; padding: 10px 12px; background: var(--blue-light); border-radius: var(--radius-sm); font-size: 13px; color: var(--blue-dark); display: none; }
+  .btn-p { background: var(--blue); color: white; border: none; padding: 13px 20px; border-radius: var(--radius); font-size: 15px; font-weight: 600; cursor: pointer; width: 100%; margin-top: 12px; display: flex; align-items: center; justify-content: center; gap: 7px; transition: opacity .15s; }
+  .btn-p:active { opacity: .85; }
+  .btn-s { background: transparent; color: var(--text); border: 0.5px solid var(--border-med); padding: 12px 20px; border-radius: var(--radius); font-size: 14px; font-weight: 500; cursor: pointer; width: 100%; margin-top: 8px; display: flex; align-items: center; justify-content: center; gap: 7px; }
+  .checkbox-row { display: flex; align-items: center; gap: 8px; margin-top: 12px; }
+  .checkbox-row input { width: auto; accent-color: var(--blue); }
+  .checkbox-row label { font-size: 13px; color: var(--text-sec); margin: 0; }
+
+  /* Legend */
+  .legend-row { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 8px; }
+  .legend-item { display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(--text-sec); }
+  .legend-sq { width: 10px; height: 10px; border-radius: 2px; flex-shrink: 0; }
+
+  /* Total line */
+  .total-line { display: flex; justify-content: space-between; padding: 10px 14px; background: var(--gray-bg); border-radius: var(--radius-sm); margin-top: 4px; }
+  .total-label { font-size: 13px; font-weight: 600; color: var(--text); }
+  .total-val { font-size: 15px; font-weight: 700; color: var(--text); }
+
+  /* Empty state */
+  .empty { text-align: center; padding: 32px 16px; color: var(--text-hint); font-size: 14px; }
+  .empty i { font-size: 36px; display: block; margin-bottom: 10px; opacity: .4; }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <div class="header">
+    <h1><i class="ti ti-car"></i> Mon Garage</h1>
+    <span class="header-sub" id="header-sub">2 véhicules</span>
+  </div>
+
+  <!-- ACCUEIL -->
+  <div id="page-dash" class="page active">
+    <div class="sec">Bilan du mois</div>
+    <div class="g2">
+      <div class="stat"><div class="stat-label">Total dépenses</div><div class="stat-val">387 <span class="stat-unit">€</span></div></div>
+      <div class="stat"><div class="stat-label">Carburant</div><div class="stat-val">142 <span class="stat-unit">€</span></div></div>
+      <div class="stat"><div class="stat-label">Conso 308</div><div class="stat-val">6.8 <span class="stat-unit">L/100</span></div></div>
+      <div class="stat"><div class="stat-label">Conso Clio</div><div class="stat-val">7.1 <span class="stat-unit">L/100</span></div></div>
+    </div>
+
+    <div class="sec">Alertes</div>
+    <div class="alert au"><i class="ti ti-alert-circle"></i><div><strong>Contrôle technique</strong> — Peugeot 308<div class="alert-sub">Échéance 15 juin 2026 · dans 3 jours</div></div></div>
+    <div class="alert as"><i class="ti ti-engine"></i><div><strong>Vidange moteur</strong> — Renault Clio<div class="alert-sub">Dans 800 km ou 30 jours</div></div></div>
+    <div class="alert as"><i class="ti ti-shield"></i><div><strong>Assurance Clio</strong> — renouvellement<div class="alert-sub">Dans 45 jours · 380 €/an</div></div></div>
+    <div class="alert ao"><i class="ti ti-check"></i><div><strong>Assurance 308</strong> — à jour<div class="alert-sub">Renouvellement janvier 2027</div></div></div>
+
+    <div class="sec">Prochains entretiens</div>
+    <div class="card card-tight">
+      <div class="row"><div class="row-l"><div class="ico ico-amber"><i class="ti ti-oil"></i></div><div><div class="rname">Vidange</div><div class="rsub">Peugeot 308 · 85 000 km</div></div></div><span class="badge ba">1 500 km</span></div>
+      <div class="row"><div class="row-l"><div class="ico ico-red"><i class="ti ti-circle"></i></div><div><div class="rname">Pneus avant</div><div class="rsub">Renault Clio · 62 000 km</div></div></div><span class="badge br">Urgent</span></div>
+      <div class="row"><div class="row-l"><div class="ico ico-gray"><i class="ti ti-filter"></i></div><div><div class="rname">Filtre à air</div><div class="rsub">Peugeot 308</div></div></div><span class="badge bg">10 000 km</span></div>
+    </div>
+  </div>
+
+  <!-- DÉPENSES -->
+  <div id="page-depenses" class="page">
+    <div class="csel">
+      <div class="csb active" onclick="selDepCar(this,'tous')">Tous</div>
+      <div class="csb" onclick="selDepCar(this,'308')">Peugeot 308</div>
+      <div class="csb" onclick="selDepCar(this,'Clio')">Renault Clio</div>
+    </div>
+
+    <div class="g2">
+      <div class="stat"><div class="stat-label">Total 2026</div><div class="stat-val" id="dep-total">2 201 <span class="stat-unit">€</span></div></div>
+      <div class="stat"><div class="stat-label">Par mois</div><div class="stat-val" id="dep-mois">367 <span class="stat-unit">€</span></div></div>
+    </div>
+
+    <div class="sec">Répartition par catégorie</div>
+    <div class="card" id="dep-cats">
+      <div class="cat-bar"><div class="cat-bar-label">Carburant</div><div class="cat-bar-track"><div class="cat-bar-fill" style="width:61%;background:#185FA5"></div></div><div class="cat-bar-val">847 €</div></div>
+      <div class="cat-bar"><div class="cat-bar-label">Entretien</div><div class="cat-bar-track"><div class="cat-bar-fill" style="width:30%;background:#1D9E75"></div></div><div class="cat-bar-val">420 €</div></div>
+      <div class="cat-bar"><div class="cat-bar-label">Assurance</div><div class="cat-bar-track"><div class="cat-bar-fill" style="width:65%;background:#7F77DD"></div></div><div class="cat-bar-val">900 €</div></div>
+      <div class="cat-bar"><div class="cat-bar-label">CT / Taxe</div><div class="cat-bar-track"><div class="cat-bar-fill" style="width:3%;background:#D85A30"></div></div><div class="cat-bar-val">34 €</div></div>
+    </div>
+
+    <div class="sec">Évolution mensuelle</div>
+    <div class="legend-row">
+      <span class="legend-item"><span class="legend-sq" style="background:#185FA5"></span>Carburant</span>
+      <span class="legend-item"><span class="legend-sq" style="background:#1D9E75"></span>Entretien</span>
+      <span class="legend-item"><span class="legend-sq" style="background:#7F77DD"></span>Assurance</span>
+    </div>
+    <div class="chart-wrap" style="height:180px"><canvas id="chart-dep-stack" role="img" aria-label="Dépenses mensuelles par catégorie"></canvas></div>
+
+    <div class="sec">Historique</div>
+    <div class="card card-tight" id="dep-history">
+      <div class="row"><div class="row-l"><div class="ico ico-purple"><i class="ti ti-shield"></i></div><div><div class="rname">Assurance Peugeot 308</div><div class="rsub">1 jan 2026 · annuelle</div></div></div><div><div class="rval">520 €</div><div class="rsub2"><span class="badge bp">Assurance</span></div></div></div>
+      <div class="row"><div class="row-l"><div class="ico ico-green"><i class="ti ti-tool"></i></div><div><div class="rname">Vidange + filtres</div><div class="rsub">308 · mars 2026</div></div></div><div><div class="rval">145 €</div><div class="rsub2"><span class="badge bg">Entretien</span></div></div></div>
+      <div class="row"><div class="row-l"><div class="ico ico-purple"><i class="ti ti-shield"></i></div><div><div class="rname">Assurance Renault Clio</div><div class="rsub">15 avr 2026 · annuelle</div></div></div><div><div class="rval">380 €</div><div class="rsub2"><span class="badge bp">Assurance</span></div></div></div>
+      <div class="row"><div class="row-l"><div class="ico ico-green"><i class="ti ti-tool"></i></div><div><div class="rname">Plaquettes de frein</div><div class="rsub">Clio · mai 2026</div></div></div><div><div class="rval">180 €</div><div class="rsub2"><span class="badge bg">Entretien</span></div></div></div>
+      <div class="row"><div class="row-l"><div class="ico ico-red"><i class="ti ti-file-check"></i></div><div><div class="rname">Prévisite CT</div><div class="rsub">308 · juin 2026</div></div></div><div><div class="rval">34 €</div><div class="rsub2"><span class="badge br">CT / Taxe</span></div></div></div>
+    </div>
+  </div>
+
+  <!-- CARBURANT -->
+  <div id="page-fuel" class="page">
+    <div class="csel">
+      <div class="csb active" onclick="selFuelCar(this,'308')">Peugeot 308</div>
+      <div class="csb" onclick="selFuelCar(this,'Clio')">Renault Clio</div>
+    </div>
+    <div class="g2">
+      <div class="stat"><div class="stat-label">Conso moyenne</div><div class="stat-val" id="fs-conso">6.8 <span class="stat-unit">L/100</span></div></div>
+      <div class="stat"><div class="stat-label">Prix moyen / L</div><div class="stat-val" id="fs-prix">1.82 <span class="stat-unit">€</span></div></div>
+      <div class="stat"><div class="stat-label">Coût / 100 km</div><div class="stat-val" id="fs-cout">12.38 <span class="stat-unit">€</span></div></div>
+      <div class="stat"><div class="stat-label">Total dépensé</div><div class="stat-val" id="fs-total">847 <span class="stat-unit">€</span></div></div>
+    </div>
+    <div class="sec">Historique des pleins</div>
+    <div class="card card-tight">
+      <div class="row"><div><div class="rname">52 L · 85 000 km</div><div class="rsub">8 juin 2026 · 1.85 €/L · plein complet</div></div><div><div class="rval">96.20 €</div><div class="rsub2">6.9 L/100</div></div></div>
+      <div class="row"><div><div class="rname">48 L · 84 250 km</div><div class="rsub">22 mai 2026 · 1.80 €/L · plein complet</div></div><div><div class="rval">86.40 €</div><div class="rsub2">6.7 L/100</div></div></div>
+      <div class="row"><div><div class="rname">50 L · 83 530 km</div><div class="rsub">4 mai 2026 · 1.78 €/L · plein complet</div></div><div><div class="rval">89.00 €</div><div class="rsub2">6.8 L/100</div></div></div>
+    </div>
+    <button class="btn-p" onclick="showPage('add');selAddTab(document.getElementById('add-tabs').children[1],'add-fuel')">
+      <i class="ti ti-plus"></i> Ajouter un plein
+    </button>
+  </div>
+
+  <!-- STATS -->
+  <div id="page-stats" class="page">
+    <div class="sec">Coût total par véhicule (2026)</div>
+    <div class="g2">
+      <div class="stat"><div class="stat-label">Peugeot 308</div><div class="stat-val">1 267 <span class="stat-unit">€</span></div></div>
+      <div class="stat"><div class="stat-label">Renault Clio</div><div class="stat-val">934 <span class="stat-unit">€</span></div></div>
+    </div>
+    <div class="sec">Consommation mensuelle (L/100)</div>
+    <div class="chart-wrap" style="height:150px"><canvas id="chart-conso" role="img" aria-label="Évolution consommation 6 mois"></canvas></div>
+    <div class="sec">Dépenses totales mensuelles (€)</div>
+    <div class="chart-wrap" style="height:150px"><canvas id="chart-dep-total" role="img" aria-label="Dépenses totales par mois"></canvas></div>
+    <div class="sec">Indicateurs</div>
+    <div class="card card-tight">
+      <div class="row"><div><div class="rname">Coût au kilomètre — 308</div><div class="rsub">Tous frais inclus</div></div><div class="rval">0.16 €/km</div></div>
+      <div class="row"><div><div class="rname">Coût au kilomètre — Clio</div><div class="rsub">Tous frais inclus</div></div><div class="rval">0.18 €/km</div></div>
+      <div class="row"><div><div class="rname">Pleins effectués</div><div class="rsub">Les deux véhicules · 2026</div></div><div class="rval">21 pleins</div></div>
+      <div class="row"><div><div class="rname">Entretiens réalisés</div><div class="rsub">Les deux véhicules · 2026</div></div><div class="rval">4 interventions</div></div>
+    </div>
+  </div>
+
+  <!-- AJOUTER -->
+  <div id="page-add" class="page">
+    <div class="csel" id="add-tabs">
+      <div class="csb active" onclick="selAddTab(this,'add-dep')">Dépense</div>
+      <div class="csb" onclick="selAddTab(this,'add-fuel')">Plein</div>
+      <div class="csb" onclick="selAddTab(this,'add-maint')">Entretien</div>
+    </div>
+
+    <div id="add-dep">
+      <div class="form-card">
+        <label class="form-label">Véhicule</label>
+        <select class="form-input" id="d-car"><option>Peugeot 308</option><option>Renault Clio</option></select>
+        <label class="form-label">Catégorie</label>
+        <select class="form-input" id="d-cat" onchange="updateDepIcon()">
+          <option>Assurance</option><option>Contrôle technique</option><option>Vignette / Taxe</option>
+          <option>Stationnement / Péage</option><option>Réparation</option><option>Accessoire</option><option>Autre</option>
+        </select>
+        <label class="form-label">Description</label>
+        <input type="text" class="form-input" id="d-desc" placeholder="ex : Assurance annuelle Maif">
+        <div class="form-row">
+          <div>
+            <label class="form-label">Montant (€)</label>
+            <input type="number" class="form-input" id="d-montant" placeholder="520" step="0.01" oninput="previewDep()">
+          </div>
+          <div>
+            <label class="form-label">Date</label>
+            <input type="date" class="form-input" id="d-date">
+          </div>
+        </div>
+        <label class="form-label">Fréquence</label>
+        <select class="form-input" id="d-freq" onchange="previewDep()">
+          <option>Ponctuel</option><option>Mensuel</option><option>Annuel</option>
+        </select>
+        <div class="preview-box" id="d-preview"></div>
+        <button class="btn-p" onclick="saveDep()"><i class="ti ti-check"></i> Enregistrer</button>
+      </div>
+    </div>
+
+    <div id="add-fuel" style="display:none">
+      <div class="form-card">
+        <label class="form-label">Véhicule</label>
+        <select class="form-input" id="f-car"><option>Peugeot 308</option><option>Renault Clio</option></select>
+        <div class="form-row">
+          <div>
+            <label class="form-label">Date</label>
+            <input type="date" class="form-input" id="f-date">
+          </div>
+          <div>
+            <label class="form-label">Km compteur</label>
+            <input type="number" class="form-input" id="f-km" placeholder="85050">
+          </div>
+        </div>
+        <div class="form-row">
+          <div>
+            <label class="form-label">Litres</label>
+            <input type="number" class="form-input" id="f-litres" placeholder="50" step="0.1" oninput="previewFuel()">
+          </div>
+          <div>
+            <label class="form-label">Prix / litre (€)</label>
+            <input type="number" class="form-input" id="f-prix" placeholder="1.85" step="0.01" oninput="previewFuel()">
+          </div>
+        </div>
+        <div class="checkbox-row">
+          <input type="checkbox" id="f-full" checked>
+          <label for="f-full">Plein complet</label>
+        </div>
+        <div class="preview-box" id="f-preview"></div>
+        <button class="btn-p" onclick="saveFuel()"><i class="ti ti-check"></i> Enregistrer le plein</button>
+      </div>
+    </div>
+
+    <div id="add-maint" style="display:none">
+      <div class="form-card">
+        <label class="form-label">Véhicule</label>
+        <select class="form-input" id="m-car"><option>Peugeot 308</option><option>Renault Clio</option></select>
+        <label class="form-label">Type d'entretien</label>
+        <select class="form-input" id="m-type">
+          <option>Vidange</option><option>Filtre à air</option><option>Filtre à huile</option>
+          <option>Pneus</option><option>Freins</option><option>Courroie distribution</option>
+          <option>Contrôle technique</option><option>Autre</option>
+        </select>
+        <div class="form-row">
+          <div>
+            <label class="form-label">Date</label>
+            <input type="date" class="form-input" id="m-date">
+          </div>
+          <div>
+            <label class="form-label">Kilométrage</label>
+            <input type="number" class="form-input" id="m-km" placeholder="85000">
+          </div>
+        </div>
+        <div class="form-row">
+          <div>
+            <label class="form-label">Coût (€)</label>
+            <input type="number" class="form-input" id="m-cost" placeholder="120" step="0.01">
+          </div>
+          <div>
+            <label class="form-label">Rappel dans (km)</label>
+            <input type="number" class="form-input" id="m-reminder" placeholder="10000">
+          </div>
+        </div>
+        <button class="btn-p" onclick="saveMaint()"><i class="ti ti-check"></i> Enregistrer</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom nav -->
+  <nav class="bottom-nav">
+    <div class="nav-item active" onclick="showPage('dash')"><i class="ti ti-home"></i>Accueil</div>
+    <div class="nav-item" onclick="showPage('depenses')"><i class="ti ti-wallet"></i>Dépenses</div>
+    <div class="nav-item" onclick="showPage('fuel')"><i class="ti ti-gas-station"></i>Carburant</div>
+    <div class="nav-item" onclick="showPage('stats')"><i class="ti ti-chart-bar"></i>Stats</div>
+    <div class="nav-item" onclick="showPage('add')"><i class="ti ti-plus"></i>Ajouter</div>
+  </nav>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script>
+function showPage(n) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(t => t.classList.remove('active'));
+  document.getElementById('page-' + n).classList.add('active');
+  const m = {dash:0, depenses:1, fuel:2, stats:3, add:4};
+  document.querySelectorAll('.nav-item')[m[n]].classList.add('active');
+  if (n === 'stats') setTimeout(initCharts, 100);
+  if (n === 'depenses') setTimeout(initStackChart, 100);
+}
+
+function selAddTab(el, sec) {
+  document.querySelectorAll('#add-tabs .csb').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  document.querySelectorAll('#page-add > div[id^="add-"]').forEach(s => s.style.display = 'none');
+  document.getElementById(sec).style.display = 'block';
+}
+
+function selDepCar(el, car) {
+  document.querySelectorAll('#page-depenses .csb').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  const data = {
+    tous: {total:'2 201', mois:'367', carb:'61%', entr:'30%', assu:'65%', ct:'3%', cv:'847', ev:'420', av:'900', ctv:'34'},
+    '308': {total:'1 267', mois:'211', carb:'67%', entr:'23%', assu:'41%', ct:'3%', cv:'520', ev:'145', av:'520', ctv:'34'},
+    'Clio': {total:'934', mois:'156', carb:'53%', entr:'39%', assu:'41%', ct:'0%', cv:'323', ev:'275', av:'380', ctv:'0'}
+  };
+  const d = data[car];
+  document.getElementById('dep-total').innerHTML = d.total + ' <span class="stat-unit">€</span>';
+  document.getElementById('dep-mois').innerHTML = d.mois + ' <span class="stat-unit">€</span>';
+  document.getElementById('dep-cats').innerHTML =
+    bar('Carburant', d.carb, '#185FA5', d.cv) + bar('Entretien', d.entr, '#1D9E75', d.ev) +
+    bar('Assurance', d.assu, '#7F77DD', d.av) + bar('CT / Taxe', d.ct, '#D85A30', d.ctv);
+}
+
+function bar(label, pct, color, val) {
+  return '<div class="cat-bar"><div class="cat-bar-label">'+label+'</div><div class="cat-bar-track"><div class="cat-bar-fill" style="width:'+pct+';background:'+color+'"></div></div><div class="cat-bar-val">'+val+' €</div></div>';
+}
+
+function selFuelCar(el, car) {
+  document.querySelectorAll('#page-fuel .csb').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  const d = {'308':{conso:'6.8', prix:'1.82', cout:'12.38', total:'847'}, 'Clio':{conso:'7.1', prix:'1.79', cout:'12.71', total:'323'}};
+  const v = d[car];
+  document.getElementById('fs-conso').innerHTML = v.conso + ' <span class="stat-unit">L/100</span>';
+  document.getElementById('fs-prix').innerHTML = v.prix + ' <span class="stat-unit">€</span>';
+  document.getElementById('fs-cout').innerHTML = v.cout + ' <span class="stat-unit">€</span>';
+  document.getElementById('fs-total').innerHTML = v.total + ' <span class="stat-unit">€</span>';
+}
+
+const months = ['Jan','Fév','Mar','Avr','Mai','Juin'];
+const chartDefaults = {
+  responsive: true, maintainAspectRatio: false,
+  plugins: { legend: { display: false } },
+  scales: {
+    x: { grid: { color: 'rgba(128,128,128,0.08)' }, ticks: { color: '#888780', font: { size: 10 } } },
+    y: { grid: { color: 'rgba(128,128,128,0.08)' }, ticks: { color: '#888780', font: { size: 10 } } }
+  }
+};
+let chartsInited = false;
+let stackInited = false;
+
+function initCharts() {
+  if (chartsInited) return;
+  chartsInited = true;
+  new Chart(document.getElementById('chart-conso'), {
+    type: 'line',
+    data: { labels: months, datasets: [{ data: [6.5,6.9,6.7,7.1,6.8,6.8], borderColor:'#185FA5', backgroundColor:'rgba(24,95,165,0.07)', tension:0.3, pointRadius:3, pointBackgroundColor:'#185FA5', fill:true }] },
+    options: chartDefaults
+  });
+  new Chart(document.getElementById('chart-dep-total'), {
+    type: 'bar',
+    data: { labels: months, datasets: [{ data: [270,310,480,350,390,387], backgroundColor:'rgba(24,95,165,0.7)', borderRadius:4 }] },
+    options: chartDefaults
+  });
+}
+
+function initStackChart() {
+  if (stackInited) return;
+  stackInited = true;
+  new Chart(document.getElementById('chart-dep-stack'), {
+    type: 'bar',
+    data: { labels: months, datasets: [
+      { label:'Carburant', data:[72,95,88,110,105,142], backgroundColor:'rgba(24,95,165,0.8)' },
+      { label:'Entretien', data:[0,0,145,0,180,0], backgroundColor:'rgba(29,158,117,0.8)' },
+      { label:'Assurance', data:[520,0,0,380,0,0], backgroundColor:'rgba(127,119,221,0.8)' }
+    ]},
+    options: { ...chartDefaults, scales: {
+      x: { ...chartDefaults.scales.x, stacked: true },
+      y: { ...chartDefaults.scales.y, stacked: true }
+    }}
+  });
+}
+
+function previewFuel() {
+  const l = parseFloat(document.getElementById('f-litres').value) || 0;
+  const p = parseFloat(document.getElementById('f-prix').value) || 0;
+  const box = document.getElementById('f-preview');
+  if (l > 0 && p > 0) {
+    box.style.display = 'block';
+    box.textContent = 'Total estimé : ' + (l * p).toFixed(2) + ' €';
+  }
+}
+
+function previewDep() {
+  const m = parseFloat(document.getElementById('d-montant').value) || 0;
+  const f = document.getElementById('d-freq').value;
+  const box = document.getElementById('d-preview');
+  if (m > 0) {
+    box.style.display = 'block';
+    let txt = 'Montant : ' + m.toFixed(2) + ' €';
+    if (f === 'Mensuel') txt += ' · soit ' + (m * 12).toFixed(0) + ' €/an';
+    if (f === 'Annuel') txt += ' · soit ' + (m / 12).toFixed(2) + ' €/mois';
+    box.textContent = txt;
+  }
+}
+
+function saveDep() {
+  const car = document.getElementById('d-car').value;
+  const cat = document.getElementById('d-cat').value;
+  const desc = document.getElementById('d-desc').value || cat;
+  const m = document.getElementById('d-montant').value;
+  const f = document.getElementById('d-freq').value;
+  if (!m) { alert('Merci de renseigner le montant.'); return; }
+  alert('✓ Dépense enregistrée !\n' + desc + ' · ' + m + ' € (' + f + ') — ' + car);
+}
+
+function saveFuel() {
+  const car = document.getElementById('f-car').value;
+  const km = document.getElementById('f-km').value;
+  const l = document.getElementById('f-litres').value;
+  const p = document.getElementById('f-prix').value;
+  if (!km || !l || !p) { alert('Merci de renseigner le kilométrage, les litres et le prix.'); return; }
+  const total = (parseFloat(l) * parseFloat(p)).toFixed(2);
+  alert('✓ Plein enregistré !\n' + car + ' · ' + l + ' L à ' + p + ' €/L = ' + total + ' €\nKm : ' + km);
+}
+
+function saveMaint() {
+  const car = document.getElementById('m-car').value;
+  const type = document.getElementById('m-type').value;
+  const km = document.getElementById('m-km').value;
+  const cost = document.getElementById('m-cost').value;
+  if (!km) { alert('Merci de renseigner le kilométrage.'); return; }
+  alert('✓ Entretien enregistré !\n' + type + ' — ' + car + ' à ' + km + ' km · ' + cost + ' €');
+}
+
+document.getElementById('f-date').valueAsDate = new Date();
+document.getElementById('d-date').valueAsDate = new Date();
+document.getElementById('m-date').valueAsDate = new Date();
+</script>
+</body>
+</html>
